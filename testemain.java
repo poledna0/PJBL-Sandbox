@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+interface Bloco {
+
+    
+}
+
 enum TipoBloco {
     TRONCO,
     FOLHAS,
@@ -23,6 +28,7 @@ class Arvore{
             objarvore.add(TipoBloco.TRONCO);
         }
 
+        this.blocos_arvore = objarvore;
         this.x = x;
         this.z = z;
         this.altura_chao = altura_chao;
