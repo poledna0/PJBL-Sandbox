@@ -4,7 +4,7 @@ Este é um projeto desenvolvido por três integrantes com o objetivo de criar um
 
 ### Integrantes:
 - **Henrique Poledna**
-- **Eduardo Machado**
+- **Eduardo Machado de Oliveira Dluhosch**
 - **Camila Hollmann**
 
 ## Descrição
