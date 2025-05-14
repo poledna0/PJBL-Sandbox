@@ -13,7 +13,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class testaLib {
 
-    
+
     // The window handle
     private long window;
 
