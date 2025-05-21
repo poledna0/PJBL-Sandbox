@@ -49,3 +49,7 @@ dependencies {
     runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = lwjglNatives)
 }
+
+application {
+    mainClass.set("Main") // Substitua por seu nome de classe completo se estiver em um pacote
+}
