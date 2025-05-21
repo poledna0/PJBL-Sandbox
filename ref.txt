@@ -1,0 +1,8 @@
+https://www.lwjgl.org/guide
+https://www.glfw.org/docs/3.3/window_guide.html
+https://www.glfw.org/docs/3.3/input_guide.html
+https://www.glfw.org/docs/3.0/group__input.html
+https://www.opengl-tutorial.org/beginners-tutorials/
+https://www.youtube.com/playlist?list=PL4QbKfRYvHvSJSVgHawYIvcIA0CcgnMzw
+https://www.baeldung.com/java-callback-functions
+https://stackoverflow.com/questions/19405421/what-is-a-callback-method-in-java-term-seems-to-be-used-loosely
