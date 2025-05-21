@@ -51,5 +51,6 @@ dependencies {
 }
 
 application {
-    mainClass.set("Main") // Substitua por seu nome de classe completo se estiver em um pacote
+    mainClass.set("xyz.dmaax.Main")
 }
+
