@@ -15,20 +15,21 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class Main {
 
-    // The window handle
+    // The window handle.
+    // Keeps the pointer to the window created by GLFW.
     private long window;
 
     public void run() {
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+        System.out.println("Hello LWJGL " + Version.getVersion() + "!"); // Shows LWJGL version.
 
-        init();
-        loop();
+        init(); // Initializes the system.
+        loop(); // Enters the rendering loop.
 
-        // Free the window callbacks and destroy the window
+        // Free the window callbacks and destroy the window.
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
 
-        // Terminate GLFW and free the error callback
+        // Terminate GLFW lib and free the error callback.
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
@@ -42,16 +43,17 @@ public class Main {
         if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
 
-        // Configure GLFW
+        // Configure GLFW.
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
-        if ( window == NULL )
+        window = glfwCreateWindow(1024, 768, "Hello World!", NULL, NULL);
+        if ( window == NULL ) {
+            glfwTerminate();
             throw new RuntimeException("Failed to create the GLFW window");
-
+        }
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
