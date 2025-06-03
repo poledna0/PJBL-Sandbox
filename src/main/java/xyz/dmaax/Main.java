@@ -22,18 +22,24 @@ class LeTxt{
     int largura = 0;
     int altura = 0;
     public void learquivo(){
-        try (BufferedReader reader = new BufferedReader(new FileReader("dimensoes.txt"))) {
-            largura = Integer.parseInt(reader.readLine());
-            altura = Integer.parseInt(reader.readLine());
+        try (BufferedReader reader = new BufferedReader(new FileReader("/home/caboclo/duck/git/PJBL-Sandbox/src/main/java/xyz/dmaax/dimensoes.txt"))) {
+            this.largura = Integer.parseInt(reader.readLine());
+            this.altura = Integer.parseInt(reader.readLine());
         } catch (IOException | NumberFormatException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
         }
     }
+    public int getLargura(){
+        return this.largura;
+    }
 
+    public int getAltura() {
+        return altura;
+    }
 }
 
 
-public class Tudo extends LeTxt{
+class Tudo extends LeTxt{
     private long window;
     private float cameraX = 0f;
     private float cameraY = 2.0f;  // Um pouco acima do chão
@@ -43,8 +49,7 @@ public class Tudo extends LeTxt{
     // Variáveis para controle do mouse
     private double lastMouseX, lastMouseY;
     private boolean firstMouse = true;
-    private HashSet<BlockPos> blocks = new HashSet<>();
-
+    //private HashSet<BlockPos> blocks = new HashSet<>();
     private void init(){
         // a gente tem q chamar essa func q ela vai iniciar a janela
         if (!glfwInit()) {
@@ -60,6 +65,10 @@ public class Tudo extends LeTxt{
         //glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         // primiero null é se a janela vai ser fullscreen, mas como a gente quer ler pelo txt, deixei null, o segundo é
         // alguma coisa de janela compartilhada, n entendi direito oq é, mas é para compartilhar contexttos OpenGL, mais ou menos isso, n sei
+
+        learquivo();
+        System.out.println(getAltura());
+        System.out.println(getLargura());
         window = glfwCreateWindow(largura, altura, "Minecraft aula JAVA", NULL, NULL);
         if (window == NULL) {
             throw new RuntimeException("Falha ao criar a janela");
@@ -119,11 +128,13 @@ public class Tudo extends LeTxt{
             if (pitch < -90)
                 pitch = -90;
         });
+        // esconde o ponteiro do mouse e trava ele no centro da tela
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+        // func anonima pera pega
     }
     public void run(){
         init();
-
 
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
@@ -133,7 +144,12 @@ public class Tudo extends LeTxt{
 
 
 
-    public static void main(String [] args){
-
+    public static void main(String[] args) {
+        try {
+            Tudo tudo = new Tudo();
+            tudo.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
