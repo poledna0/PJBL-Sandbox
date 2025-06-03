@@ -1,117 +1,139 @@
 package xyz.dmaax;
 
-import org.lwjgl.*;
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
+import org.lwjgl.Version;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 
-import java.nio.*;
+import java.nio.IntBuffer;
+import java.util.HashSet;
 
-import static org.lwjgl.glfw.Callbacks.*;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class Main {
+import javax.swing.*;
+import java.io.*;
 
-    // The window handle
+class LeTxt{
+    int largura = 0;
+    int altura = 0;
+    public void learquivo(){
+        try (BufferedReader reader = new BufferedReader(new FileReader("dimensoes.txt"))) {
+            largura = Integer.parseInt(reader.readLine());
+            altura = Integer.parseInt(reader.readLine());
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+        }
+    }
+
+}
+
+
+public class Tudo extends LeTxt{
     private long window;
+    private float cameraX = 0f;
+    private float cameraY = 2.0f;  // Um pouco acima do chão
+    private float cameraZ = 5f;
+    private float yaw = 0f;   // Rotação horizontal
+    private float pitch = 0f; // Rotação vertical
+    // Variáveis para controle do mouse
+    private double lastMouseX, lastMouseY;
+    private boolean firstMouse = true;
+    private HashSet<BlockPos> blocks = new HashSet<>();
 
-    public void run() {
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+    private void init(){
+        // a gente tem q chamar essa func q ela vai iniciar a janela
+        if (!glfwInit()) {
+            throw new IllegalStateException("N foi possivel inicializar o GLFW");
+        }
+        // essa func reseta tds os valores padroes de janela, o recomendado, uma lista interda do glfw
+        // reseta por boa pratica, tipo zerar um registrador antes de fazer uma conta
+        glfwDefaultWindowHints();
+        // inicia a janela inv para q n de bugs, pisque, ele espera iniciar td e dps coloca ela visível
+        // a gente colocou a visibilidade em false
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        //essa serve para o usuario conseguir mudar o tamanho
+        //glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        // primiero null é se a janela vai ser fullscreen, mas como a gente quer ler pelo txt, deixei null, o segundo é
+        // alguma coisa de janela compartilhada, n entendi direito oq é, mas é para compartilhar contexttos OpenGL, mais ou menos isso, n sei
+        window = glfwCreateWindow(largura, altura, "Minecraft aula JAVA", NULL, NULL);
+        if (window == NULL) {
+            throw new RuntimeException("Falha ao criar a janela");
+        }
+        // esta é uma func anonima q vai ser rodada toda vez q uma tecla for apertada, nesse caso
+        //janela, a tecla, scancode é o codigo fisico da tecla, normalmente as pessoas iguinoram ela, só é usada e casos mt específicos
+        // o action é oq acontece, tipo quando clicar, nesse caso, é release, ent tem q clicar e soltar, só dai vai fazer, ex GLFW_PRESS, GLFW_RELEASE, GLFW_REPEAT
 
+        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+                // dai ele vai fechar a janela
+                glfwSetWindowShouldClose(window, true);
+        });
+        // essa é outra func anonima q vai ser chamada td vez q o hamister se mover
+        // recebe de parametro a janela, a x e o y do hamister
+        glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
+            // para na primeira vez q mover a camera n ter um grande salto, quando iniciar ele vai pegar a cordenada anteriror
+            // assim n tem um puta movimento no inicio, n sei explicar, se quiser ver tira esse if e testa
+            if (firstMouse) {
+                lastMouseX = xpos;
+                lastMouseY = ypos;
+                firstMouse = false;
+            }
+            /*
+            esssas duas linhas
+            double xoffset = xpos - lastMouseX;
+            double yoffset = lastMouseY - ypos;
+
+            o xpos é a possicao atual do mouse, a gente subtrai com as cordenadas anterorios q sao a lastMouse
+            é inverdido o do y por causa q y = movemos para baixo para subir, ent a gente inverte
+
+            ex do chatgpt (
+
+            xoffset = 110 - 100 = 10 - o mouse andou 10 pixels para a direita.
+
+            yoffset = 200 - 195 = 5 - o mouse andou 5 pixels para cima.
+
+            )
+
+             */
+            double xoffset = xpos - lastMouseX;
+            double yoffset = lastMouseY - ypos;
+
+            // att as posicoes q ag essa sao as antigas
+            lastMouseX = xpos;
+            lastMouseY = ypos;
+
+            float sensitivity = 0.1f;
+            // yaw = X
+            // pitch = Y
+            yaw += xoffset * sensitivity;
+            pitch += yoffset * sensitivity;
+
+            // para evitar q o boneco quebra a cbc kkkkk
+            if (pitch > 90)
+                pitch = 90;
+            if (pitch < -90)
+                pitch = -90;
+        });
+
+    }
+    public void run(){
         init();
-        loop();
 
-        // Free the window callbacks and destroy the window
+
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
-
-        // Terminate GLFW and free the error callback
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
 
-    private void init() {
-        // Setup an error callback. The default implementation
-        // will print the error message in System.err.
-        GLFWErrorCallback.createPrint(System.err).set();
 
-        // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if ( !glfwInit() )
-            throw new IllegalStateException("Unable to initialize GLFW");
 
-        // Configure GLFW
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+    public static void main(String [] args){
 
-        // Create the window
-        window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
-        if ( window == NULL )
-            throw new RuntimeException("Failed to create the GLFW window");
-
-        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-        });
-
-        // Get the thread stack and push a new frame
-        try ( MemoryStack stack = stackPush() ) {
-            IntBuffer pWidth = stack.mallocInt(1); // int*
-            IntBuffer pHeight = stack.mallocInt(1); // int*
-
-            // Get the window size passed to glfwCreateWindow
-            glfwGetWindowSize(window, pWidth, pHeight);
-
-            // Get the resolution of the primary monitor
-            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-            // Center the window
-            glfwSetWindowPos(
-                    window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
-        } // the stack frame is popped automatically
-
-        // Make the OpenGL context current
-        glfwMakeContextCurrent(window);
-        // Enable v-sync
-        glfwSwapInterval(1);
-
-        // Make the window visible
-        glfwShowWindow(window);
     }
-
-    private void loop() {
-        // This line is critical for LWJGL's interoperation with GLFW's
-        // OpenGL context, or any context that is managed externally.
-        // LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL
-        // bindings available for use.
-        GL.createCapabilities();
-
-        // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
-        // Run the rendering loop until the user has attempted to close
-        // the window or has pressed the ESCAPE key.
-        while ( !glfwWindowShouldClose(window) ) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
-            glfwSwapBuffers(window); // swap the color buffers
-
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents();
-        }
-    }
-
-    public static void main(String[] args) {
-        new Main().run();
-    }
-
 }
