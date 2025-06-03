@@ -1,21 +1,11 @@
 package xyz.dmaax;
 
-import org.lwjgl.Version;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.system.MemoryStack;
-
-import java.nio.IntBuffer;
 import java.util.HashSet;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-import javax.swing.*;
 import java.io.*;
 
 class LeTxt{
@@ -44,8 +34,8 @@ class Tudo extends LeTxt{
     private float cameraX = 0f;
     private float cameraY = 2.0f;  // Um pouco acima do chão
     private float cameraZ = 5f;
-    private float yaw = 0f;   // Rotação horizontal
-    private float pitch = 0f; // Rotação vertical
+    private float rotacaohorizontal = 0f;
+    private float rotacaovertical = 0f;
     // Variáveis para controle do mouse
     private double lastMouseX, lastMouseY;
     private boolean firstMouse = true;
@@ -117,16 +107,16 @@ class Tudo extends LeTxt{
             lastMouseY = ypos;
 
             float sensitivity = 0.1f;
-            // yaw = X
-            // pitch = Y
-            yaw += xoffset * sensitivity;
-            pitch += yoffset * sensitivity;
+            // rotacaohorizontal = X
+            // rotacaovertical = Y
+            rotacaohorizontal += xoffset * sensitivity;
+            rotacaovertical += yoffset * sensitivity;
 
             // para evitar q o boneco quebra a cbc kkkkk
-            if (pitch > 90)
-                pitch = 90;
-            if (pitch < -90)
-                pitch = -90;
+            if (rotacaovertical > 90)
+                rotacaovertical = 90;
+            if (rotacaovertical < -90)
+                rotacaovertical = -90;
         });
         // esconde o ponteiro do mouse e trava ele no centro da tela
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
