@@ -8,18 +8,28 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.io.*;
 
-class LeTxt{
+class LeTxtException extends Exception {
+    public LeTxtException(String message) {
+        super(message);
+    }
+}
+
+class LeTxt {
     int largura = 0;
     int altura = 0;
-    public void learquivo(){
+
+    public void learquivo() throws LeTxtException {
         try (BufferedReader reader = new BufferedReader(new FileReader("/home/caboclo/duck/git/PJBL-Sandbox/src/main/java/xyz/dmaax/dimensoes.txt"))) {
             this.largura = Integer.parseInt(reader.readLine());
             this.altura = Integer.parseInt(reader.readLine());
-        } catch (IOException | NumberFormatException e) {
-            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+        } catch (IOException e1) {
+            throw new LeTxtException("Erro 1 ao ler o arquivo " + e1.getMessage());
+        }catch (NumberFormatException e2){
+            throw new LeTxtException("Erro 2 ao ler o arquivo " + e2.getMessage());
         }
     }
-    public int getLargura(){
+
+    public int getLargura() {
         return this.largura;
     }
 
@@ -27,6 +37,7 @@ class LeTxt{
         return altura;
     }
 }
+
 
 
 class Tudo extends LeTxt{
@@ -55,11 +66,9 @@ class Tudo extends LeTxt{
         //glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         // primiero null é se a janela vai ser fullscreen, mas como a gente quer ler pelo txt, deixei null, o segundo é
         // alguma coisa de janela compartilhada, n entendi direito oq é, mas é para compartilhar contexttos OpenGL, mais ou menos isso, n sei
+        try {learquivo();}catch (LeTxtException e){System.out.println(e.getMessage());} // em uma linha msm, da nada
 
-        learquivo();
-        System.out.println(getAltura());
-        System.out.println(getLargura());
-        window = glfwCreateWindow(largura, altura, "Minecraft aula JAVA", NULL, NULL);
+        window = glfwCreateWindow(getLargura(), getAltura(), "Minecraft aula JAVA", NULL, NULL);
         if (window == NULL) {
             throw new RuntimeException("Falha ao criar a janela");
         }
