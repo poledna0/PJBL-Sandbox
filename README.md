@@ -89,14 +89,14 @@ class WoodBlock extends Block implements Renderable { }
 |--------|----------------|---------|
 | **Eduardo** | **Engine/Rendering** | • **POO:** Criar classe abstrata `GameObject` com métodos abstratos<br>• **POO:** Implementar classe `Camera` e `Renderer`<br>• Configurar LWJGL + OpenGL + JOML<br>• Sistema básico de janela e input<br>• **Req. 12:** Interface gráfica básica<br>• Shader básico para cubos |
 | **Camilla** | **World/Chunks** | • **POO:** Criar classes `World`, `Chunk` e hierarquia `Block`<br>• **POO:** Implementar herança (`GrassBlock`, `StoneBlock` extends `Block`)<br>• **Req. 10:** Usar `ArrayList<Block>` nos chunks<br>• **Req. 9:** Associação `World` -> `Chunk` -> `Block`<br>• Geração básica de terreno<br>• **Req. 11:** Criar `ChunkLoadException` |
-| **Pessoa 3** | **Interface/Menus** | • **POO:** Criar classes `Player`, `Inventory`, `GameEngine`<br>• **POO:** `Player` herda de `GameObject`<br>• **Req. 9:** Associação `Player` -> `Inventory`<br>• Menu principal e HUD<br>• Sistema de estados do jogo<br>• **Req. 13:** Preparar leitura de config.txt |
+| **Henrique** | **Interface/Menus** | • **POO:** Criar classes `Player`, `Inventory`, `GameEngine`<br>• **POO:** `Player` herda de `GameObject`<br>• **Req. 9:** Associação `Player` -> `Inventory`<br>• Menu principal e HUD<br>• Sistema de estados do jogo<br>• **Req. 13:** Preparar leitura de config.txt |
 
 ### Semana 2: Mecânicas Core + POO Avançado
 
 | Pessoa | Especialização | Tarefas |
 |--------|----------------|---------|
 | **Camilla** | **Physics/Collision** | • **Req. 7:** Implementar métodos abstratos `render()` e `update()` em subclasses<br>• **Req. 8:** Usar polimorfismo para renderizar diferentes `GameObject`s<br>• Detecção de colisão jogador-mundo<br>• Física básica (gravidade, pulo)<br>• Raycasting para seleção de blocos |
-| **Pessoa 2** | **Block System** | • **POO:** Expandir hierarquia de blocos (mínimo 3 tipos)<br>• **Req. 8:** Polimorfismo na renderização de blocos<br>• Sistema de quebrar/colocar blocos<br>• Meshing otimizado<br>• **Req. 13:** Carregar texturas de arquivo .txt<br>• Texturas básicas |
+| **Henrique** | **Block System** | • **POO:** Expandir hierarquia de blocos (mínimo 3 tipos)<br>• **Req. 8:** Polimorfismo na renderização de blocos<br>• Sistema de quebrar/colocar blocos<br>• Meshing otimizado<br>• **Req. 13:** Carregar texturas de arquivo .txt<br>• Texturas básicas |
 | **Eduardo** | **Game Logic** | • **Req. 14:** Sistema de save/load usando serialização<br>• **POO:** Garantir encapsulamento em todas as classes<br>• **Req. 5:** Verificar se classes têm atributos/métodos suficientes<br>• Inventário funcional<br>• Sistema de seleção de blocos<br>• Integração dos sistemas |
 
 ### Semana 3: Polish + Validação POO
