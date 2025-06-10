@@ -9,8 +9,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import xyz.dmaax.capivara.exceptions.ExcecaoLeituraDimensoes;
-
-import java.io.Serializable;
+import xyz.dmaax.capivara.utils.PosicaoBloco;
+import xyz.dmaax.capivara.utils.Salvar;
+import xyz.dmaax.capivara.utils.SalvarImp;
 
 import java.nio.IntBuffer;
 import java.util.HashSet;
@@ -19,23 +20,6 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 
 import java.io.*;
 
-
-abstract class Salvar {
-    abstract public void salvaMundo(HashSet<Main.PosicaoBloco> posicoesDosBlocos);
-}
-
-class SalvarImp extends Salvar {
-    public void salvaMundo(HashSet<Main.PosicaoBloco> posicoesDosBlocos) {
-
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/java/xyz/dmaax/capivara/blocos.dat"))) {
-            oos.writeObject(posicoesDosBlocos);
-            System.out.println("Mundo salvo com sucesso!");
-        } catch (IOException e) {
-            System.err.println("Falha ao salvar o mundo.");
-            e.printStackTrace();
-        }
-    }
-}
 class LeitorDimensoes {
     private int largura = 0;
     private int altura = 0;
@@ -529,36 +513,6 @@ public class Main extends LeitorDimensoes {
         glEnd();
 
         glPopMatrix();
-    }
-
-
-    protected static class PosicaoBloco implements Serializable{
-        public int x, y, z;
-
-        public PosicaoBloco(int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-
-        @Override
-        public boolean equals(Object outroObjeto) {
-            if (this == outroObjeto)
-                return true;
-            if (outroObjeto == null || getClass() != outroObjeto.getClass())
-                return false;
-            PosicaoBloco outraPosicao = (PosicaoBloco) outroObjeto;
-            return x == outraPosicao.x && y == outraPosicao.y && z == outraPosicao.z;
-        }
-
-        @Override
-        public int hashCode() {
-            int valorHash = x;
-            valorHash = 20 * valorHash + y;
-            valorHash = 20 * valorHash + z;
-            return valorHash;
-        }
     }
 
     // armazena os dados do raycast
