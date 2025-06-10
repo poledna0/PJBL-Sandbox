@@ -24,6 +24,23 @@ class ExcecaoLeituraDimensoes extends Exception {
     }
 }
 
+abstract class Salvar extends Main{
+    abstract public void salvaMundo();
+}
+
+class SalvarImp extends Salvar{
+
+    public void salvaMundo(){
+        HashSet<PosicaoBloco> posicoesDosBlocos = getPosicoesDosBlocos();
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/java/xyz/dmaax/capivara/blocos.dat"))) {
+            oos.writeObject(posicoesDosBlocos);
+            System.out.println("Salvo com sucesso!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
 class LeitorDimensoes {
     private int largura = 0;
     private int altura = 0;
@@ -66,6 +83,11 @@ public class Main extends LeitorDimensoes {
     private HashSet<PosicaoBloco> posicoesDosBlocos = new HashSet<>();
 
 
+    public HashSet<PosicaoBloco> getPosicoesDosBlocos(){
+        return posicoesDosBlocos;
+    }
+
+
     public void run() {
         init();
         loop();
@@ -96,7 +118,7 @@ public class Main extends LeitorDimensoes {
 
         try {learquivo();} catch (ExcecaoLeituraDimensoes excecaoLeituraConfig) {System.out.println(excecaoLeituraConfig.getMessage());} // em uma linha msm, da nada
 
-        window = glfwCreateWindow(getLargura(), getAltura(), "aula java prof Pedro ", NULL, NULL);
+        window = glfwCreateWindow(getLargura(), getAltura(), "Prof Pedro ", NULL, NULL);
         // aq verifica se o ponteiro n é nulo
         if (window == NULL) {
             throw new RuntimeException("Falha ao criar a janela");
@@ -109,16 +131,14 @@ public class Main extends LeitorDimensoes {
             if (tecla == GLFW_KEY_ESCAPE && acaoTecla == GLFW_RELEASE)
                 // dai ele vai fechar a janela
                 glfwSetWindowShouldClose(janelaEvt, true);
-            if (tecla == GLFW_KEY_P && acaoTecla == GLFW_RELEASE){
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/java/xyz/dmaax/capivara/blocos.dat"))) {
-                    oos.writeObject(posicoesDosBlocos);
-                    System.out.println("Salvo com sucesso!");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
 
+
+            if (tecla == GLFW_KEY_P && acaoTecla == GLFW_RELEASE) {
+                Salvar salvar = new SalvarImp();
+                salvar.salvaMundo();
+            }
         });
+
 
 
         // Callback para detectar o movimento do mouse e atualizar a orientação da câmera
@@ -512,7 +532,7 @@ public class Main extends LeitorDimensoes {
     }
 
 
-    private static class PosicaoBloco implements Serializable{
+    protected static class PosicaoBloco implements Serializable{
         public int x, y, z;
 
         public PosicaoBloco(int x, int y, int z) {
