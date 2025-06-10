@@ -51,6 +51,6 @@ dependencies {
 }
 
 application {
-    mainClass.set("xyz.dmaax.Main")
+    mainClass.set("xyz.dmaax.capivara.Main")
 }
 
