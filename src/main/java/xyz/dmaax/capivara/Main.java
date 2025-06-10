@@ -8,7 +8,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
-
+import java.io.Serializable;
 
 import java.nio.IntBuffer;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ class LeitorDimensoes {
     private int altura = 0;
 
     public void learquivo() throws ExcecaoLeituraDimensoes {
-        try (BufferedReader leitor = new BufferedReader(new FileReader("/home/pato/duck2/duck/git/PJBL-Sandbox/src/main/java/xyz/dmaax/capivara/dimensoes.txt"))) {
+        try (BufferedReader leitor = new BufferedReader(new FileReader("src/main/java/xyz/dmaax/capivara/dimensoes.txt"))) {
             this.largura = Integer.parseInt(leitor.readLine());
             this.altura = Integer.parseInt(leitor.readLine());
         } catch (IOException e) {
@@ -64,7 +64,6 @@ public class Main extends LeitorDimensoes {
     // quando usa a func contains(), para saber se ja tem bloco naquela posicao, o tempo q demora é contante, ou seja, se for o primeiro bloco do array ou o ultimo,
     // demora o msm tempo para saber se ele exist
     private HashSet<PosicaoBloco> posicoesDosBlocos = new HashSet<>();
-
 
 
     public void run() {
@@ -110,7 +109,17 @@ public class Main extends LeitorDimensoes {
             if (tecla == GLFW_KEY_ESCAPE && acaoTecla == GLFW_RELEASE)
                 // dai ele vai fechar a janela
                 glfwSetWindowShouldClose(janelaEvt, true);
+            if (tecla == GLFW_KEY_P && acaoTecla == GLFW_RELEASE){
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/java/xyz/dmaax/capivara/blocos.dat"))) {
+                    oos.writeObject(posicoesDosBlocos);
+                    System.out.println("Salvo com sucesso!");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         });
+
 
         // Callback para detectar o movimento do mouse e atualizar a orientação da câmera
         glfwSetCursorPosCallback(window, (janelaEvt, posX, posY) -> {
@@ -195,12 +204,17 @@ public class Main extends LeitorDimensoes {
 
     // aq tem q mexer na persis de objetos, a gente faz um controle de fluxo q tipo se existe o arquivo x na pasta y, le, se n tiver nada, a gente cria e tal, dai tb tem q
     // ter uma opcao de salvar antes de sair, tipo aaa clica a tecla Z e ele vai criar esse arquivo
-    private void initBlocks() {
-        for (int x = -15; x < 15; x++) {
-            for (int z = -15; z < 15; z++) {
-                posicoesDosBlocos.add(new PosicaoBloco(x, 0, z));
-                posicoesDosBlocos.add(new PosicaoBloco(x, -1, z));
 
+    private void initBlocks() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/main/java/xyz/dmaax/capivara/blocos.dat"))) {
+            posicoesDosBlocos = (HashSet<PosicaoBloco>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            posicoesDosBlocos = new HashSet<>();
+            for (int x = -15; x < 15; x++) {
+                for (int z = -15; z < 15; z++) {
+                    posicoesDosBlocos.add(new PosicaoBloco(x, 0, z));
+                    posicoesDosBlocos.add(new PosicaoBloco(x, -1, z));
+                }
             }
         }
     }
@@ -284,10 +298,10 @@ public class Main extends LeitorDimensoes {
         // converde o angulo da visao para radianos, math.tan só trabalha com radianos
         // explicacao do chat ->
         /*
-        *Divide por 2 porque é como se fosse a metade do ângulo para cima e para baixo (pensa numa pirâmide com vértice na sua câmera).
-        *Usa Math.tan() para calcular o tamanho da face de cima do frustum (forma de pirâmide cortada) na profundidade planoProximo.
-        * O resultado é a coordenada do topo da visão 3D naquele plano
-        * */
+         *Divide por 2 porque é como se fosse a metade do ângulo para cima e para baixo (pensa numa pirâmide com vértice na sua câmera).
+         *Usa Math.tan() para calcular o tamanho da face de cima do frustum (forma de pirâmide cortada) na profundidade planoProximo.
+         * O resultado é a coordenada do topo da visão 3D naquele plano
+         * */
         float topoPerspectiva = (float)Math.tan(Math.toRadians(anguloVisaoY / 2)) * planoProximo;
         // parte de baixo é simétrica à de cima, mas negativa. Isso define o campo de visão vertical
         float basePerspectiva = -topoPerspectiva;
@@ -348,8 +362,9 @@ public class Main extends LeitorDimensoes {
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
             cameraX -= direitaX * velocidadeMovimentacao;
             cameraZ -= direitaZ * velocidadeMovimentacao;
-
         }
+
+
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
             cameraX += direitaX * velocidadeMovimentacao;
             cameraZ += direitaZ * velocidadeMovimentacao;
@@ -361,6 +376,9 @@ public class Main extends LeitorDimensoes {
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
             cameraY -= velocidadeMovimentacao;
         }
+
+
+
     }
 
     // trasnforma uma cordenada do jg q é float para cordenada q bloco q é int, 0.5 para arredondar
@@ -494,7 +512,7 @@ public class Main extends LeitorDimensoes {
     }
 
 
-    private static class PosicaoBloco {
+    private static class PosicaoBloco implements Serializable{
         public int x, y, z;
 
         public PosicaoBloco(int x, int y, int z) {
