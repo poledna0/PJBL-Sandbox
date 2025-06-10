@@ -8,6 +8,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
+import xyz.dmaax.capivara.exceptions.ExcecaoLeituraDimensoes;
+
 import java.io.Serializable;
 
 import java.nio.IntBuffer;
@@ -18,16 +20,9 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import java.io.*;
 
 
-class ExcecaoLeituraDimensoes extends Exception {
-    public ExcecaoLeituraDimensoes(String mensagem) {
-        super("Erro de leitura de arquivo " + mensagem);
-    }
-}
-
 abstract class Salvar {
     abstract public void salvaMundo(HashSet<Main.PosicaoBloco> posicoesDosBlocos);
 }
-
 
 class SalvarImp extends Salvar {
     public void salvaMundo(HashSet<Main.PosicaoBloco> posicoesDosBlocos) {
