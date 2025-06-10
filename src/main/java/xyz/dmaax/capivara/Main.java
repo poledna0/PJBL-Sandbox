@@ -24,23 +24,23 @@ class ExcecaoLeituraDimensoes extends Exception {
     }
 }
 
-abstract class Salvar extends Main{
-    abstract public void salvaMundo();
+abstract class Salvar {
+    abstract public void salvaMundo(HashSet<Main.PosicaoBloco> posicoesDosBlocos);
 }
 
-class SalvarImp extends Salvar{
 
-    public void salvaMundo(){
-        HashSet<PosicaoBloco> posicoesDosBlocos = getPosicoesDosBlocos();
+class SalvarImp extends Salvar {
+    public void salvaMundo(HashSet<Main.PosicaoBloco> posicoesDosBlocos) {
+
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/java/xyz/dmaax/capivara/blocos.dat"))) {
             oos.writeObject(posicoesDosBlocos);
-            System.out.println("Salvo com sucesso!");
+            System.out.println("Mundo salvo com sucesso!");
         } catch (IOException e) {
+            System.err.println("Falha ao salvar o mundo.");
             e.printStackTrace();
         }
     }
 }
-
 class LeitorDimensoes {
     private int largura = 0;
     private int altura = 0;
@@ -135,10 +135,9 @@ public class Main extends LeitorDimensoes {
 
             if (tecla == GLFW_KEY_P && acaoTecla == GLFW_RELEASE) {
                 Salvar salvar = new SalvarImp();
-                salvar.salvaMundo();
+                salvar.salvaMundo(posicoesDosBlocos);
             }
         });
-
 
 
         // Callback para detectar o movimento do mouse e atualizar a orientação da câmera
