@@ -528,7 +528,7 @@ public class Main extends LeitorDimensoes {
         public int zBlocoAdjacente;
     }
 
-    public static void main(String[] argumentosExecucao) {
-        new Main().run();
-    }
+    //public static void main(String[] argumentosExecucao) {
+    //    new Main().run();
+    //}
 }
