@@ -12,21 +12,28 @@ public class LeitorDimensoes {
     private int altura = 0;
 
     public void learquivo() throws ExcecaoLeituraDimensoes {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("dimensoes.txt");
-             BufferedReader leitor = new BufferedReader(new InputStreamReader(inputStream))) {
+        InputStream entrada = null;
+        BufferedReader leitor = null;
 
-            if (inputStream == null) {
-                throw new ExcecaoLeituraDimensoes("Arquivo dimensoes.txt não encontrado nos resources");
+        try {
+            entrada = getClass().getClassLoader().getResourceAsStream("dimensoes.txt");
+
+            if (entrada == null) {
+                throw new ExcecaoLeituraDimensoes(" erro na leitura");
             }
+
+            leitor = new BufferedReader(new InputStreamReader(entrada));
 
             this.largura = Integer.parseInt(leitor.readLine());
             this.altura = Integer.parseInt(leitor.readLine());
+            //String ex = leitor.readLine();
         } catch (IOException e) {
             throw new ExcecaoLeituraDimensoes(e.getMessage());
         } catch (NumberFormatException e2) {
             throw new ExcecaoLeituraDimensoes(e2.getMessage());
         }
     }
+
 
     public int getLargura() {
         return this.largura;
